@@ -1,0 +1,1517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanjivani Study Planner</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-primary: #121212;
+            --bg-secondary: #1e1e1e;
+            --bg-tertiary: #2d2d2d;
+            --primary-color: #6366f1;
+            --primary-light: rgba(99, 102, 241, 0.2);
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --text-primary: #f3f4f6;
+            --text-secondary: #a1a1aa;
+            --text-tertiary: #71717a;
+            --border-color: #3f3f46;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+            --shadow-inner: inset 0 2px 4px rgba(0, 0, 0, 0.3);
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 1rem;
+            --spacing-1: 0.25rem;
+            --spacing-2: 0.5rem;
+            --spacing-3: 0.75rem;
+            --spacing-4: 1rem;
+            --spacing-5: 1.5rem;
+            --spacing-6: 2rem;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--spacing-4);
+        }
+        
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-4) 0;
+            margin-bottom: var(--spacing-5);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo-container img {
+            height: 50px;
+            margin-right: var(--spacing-3);
+            background-color: #1e1e1e;
+            padding: 5px;
+            border-radius: var(--radius-sm);
+        }
+        
+        .logo-container h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-4);
+        }
+        
+        .date-selector {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-sm);
+            font-size: 0.9rem;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-3);
+            background-color: var(--bg-tertiary);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-md);
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .user-name {
+            font-weight: 500;
+        }
+        
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--spacing-5);
+        }
+        
+        .card {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            padding: var(--spacing-5);
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .card-icon {
+            width: 36px;
+            height: 36px;
+            background-color: var(--primary-light);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-color);
+        }
+        
+        /* Study Timer Styles */
+        .timer-card {
+            grid-column: span 3;
+        }
+        
+        .timer-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            color: var(--primary-color);
+            margin: var(--spacing-5) 0;
+        }
+        
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-3);
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .timer-btn {
+            border: none;
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-radius: var(--radius-md);
+            padding: var(--spacing-3) var(--spacing-5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .timer-btn.start {
+            background-color: var(--success-color);
+        }
+        
+        .timer-btn.pause {
+            background-color: var(--warning-color);
+            color: #000;
+        }
+        
+        .timer-btn.reset {
+            background-color: var(--danger-color);
+        }
+        
+        .timer-btn:hover {
+            opacity: 0.9;
+            transform: scale(1.05);
+        }
+        
+        .timer-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .subject-selector {
+            width: 100%;
+            padding: var(--spacing-3);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-4);
+            outline: none;
+        }
+        
+        .study-stats {
+            margin-top: var(--spacing-4);
+            padding-top: var(--spacing-4);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-2);
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+        }
+        
+        .stat-value {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* Tasks Styles */
+        .tasks-card {
+            grid-column: span 5;
+        }
+        
+        .task-header-controls {
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .task-filter {
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: var(--spacing-1) var(--spacing-3);
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            cursor: pointer;
+            outline: none;
+        }
+        
+        .add-task-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-1) var(--spacing-3);
+            font-size: 0.85rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .task-list {
+            margin-top: var(--spacing-4);
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: flex-start;
+            padding: var(--spacing-3) 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .task-checkbox {
+            margin-top: 5px;
+            margin-right: var(--spacing-3);
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 4px;
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+        
+        .task-checkbox:checked {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .task-checkbox:checked::after {
+            content: '✓';
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 12px;
+        }
+        
+        .task-content {
+            flex: 1;
+        }
+        
+        .task-title {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .task-details {
+            display: flex;
+            gap: var(--spacing-3);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .task-detail {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: var(--spacing-2);
+        }
+        
+        .task-action-btn {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+        
+        .task-action-btn:hover {
+            color: var(--text-primary);
+        }
+        
+        .delete-btn:hover {
+            color: var(--danger-color);
+        }
+        
+        /* Progress Styles */
+        .progress-card {
+            grid-column: span 4;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .progress-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .progress-circle {
+            position: relative;
+            width: 180px;
+            height: 180px;
+        }
+        
+        .progress-svg {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+        
+        .progress-circle-bg {
+            fill: none;
+            stroke: var(--bg-tertiary);
+            stroke-width: 15;
+        }
+        
+        .progress-circle-fill {
+            fill: none;
+            stroke: var(--primary-color);
+            stroke-width: 15;
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.5s ease;
+        }
+        
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .progress-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .progress-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .subject-progress {
+            width: 100%;
+            margin-top: var(--spacing-4);
+        }
+        
+        .subject-item {
+            margin-bottom: var(--spacing-3);
+        }
+        
+        .subject-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-1);
+        }
+        
+        .subject-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        
+        .subject-hours {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+        
+        .progress-bar-bg {
+            height: 8px;
+            width: 100%;
+            background-color: var(--bg-tertiary);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* Analytics Styles */
+        .analytics-card {
+            grid-column: span 12;
+        }
+        
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-5);
+        }
+        
+        .chart-title {
+            font-weight: 600;
+        }
+        
+        .chart-filters {
+            display: flex;
+            gap: var(--spacing-3);
+        }
+        
+        .chart-filter {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .chart-filter.active {
+            background-color: var(--primary-light);
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+        
+        .charts-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-5);
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-content {
+            background-color: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            padding: var(--spacing-4);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: var(--spacing-4);
+        }
+        
+        .form-group {
+            margin-bottom: var(--spacing-4);
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-2);
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: var(--spacing-3);
+            background-color: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: var(--radius-sm);
+            outline: none;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        
+        .modal-footer {
+            padding: var(--spacing-4);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-3);
+        }
+        
+        .btn {
+            padding: var(--spacing-2) var(--spacing-5);
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-cancel {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Scrollbar Styles */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--bg-tertiary);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-tertiary);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(8, 1fr);
+            }
+            
+            .timer-card {
+                grid-column: span 4;
+            }
+            
+            .tasks-card {
+                grid-column: span 4;
+            }
+            
+            .progress-card {
+                grid-column: span 8;
+            }
+            
+            .analytics-card {
+                grid-column: span 8;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            .timer-card, .tasks-card, .progress-card, .analytics-card {
+                grid-column: span 4;
+            }
+            
+            header {
+                flex-direction: column;
+                gap: var(--spacing-4);
+            }
+            
+            .header-controls {
+                width: 100%;
+                flex-direction: column;
+                gap: var(--spacing-3);
+            }
+            
+            .date-selector {
+                width: 100%;
+            }
+            
+            .user-profile {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <div class="logo-container">
+                <img src="https://sanjivani.org.in/wp-content/uploads/2023/05/logopopup.png" alt="Sanjivani Logo">
+                <h1>Study Planner</h1>
+            </div>
+            
+            <div class="header-controls">
+                <select class="date-selector" id="dateSelector">
+                    <option value="today">Today</option>
+                    <option value="this-week" selected>This Week</option>
+                    <option value="this-month">This Month</option>
+                    <option value="custom">Custom Range</option>
+                </select>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">👧</div>
+                    <span class="user-name">Gayatri Thombre</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <!-- Study Timer Card -->
+            <div class="card timer-card">
+                <div class="card-header">
+                    <h2 class="card-title">Study Timer</h2>
+                    <div class="card-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                
+                <select class="subject-selector" id="timerSubjectSelect">
+                    <option value="" selected disabled>Select Subject</option>
+                    <option value="1">Mathematics</option>
+                    <option value="2">Physics</option>
+                    <option value="3">Computer Science</option>
+                    <option value="4">English</option>
+                    <option value="5">Chemistry</option>
+                </select>
+                
+                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                
+                <div class="timer-controls">
+                    <button class="timer-btn start" id="startTimerBtn">
+                        <i class="fas fa-play"></i> Start
+                    </button>
+                    <button class="timer-btn pause" id="pauseTimerBtn" disabled>
+                        <i class="fas fa-pause"></i> Pause
+                    </button>
+                    <button class="timer-btn reset" id="resetTimerBtn" disabled>
+                        <i class="fas fa-undo"></i> Reset
+                    </button>
+                </div>
+                
+                <div class="study-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Today's Total</span>
+                        <span class="stat-value" id="todayTotal">2h 15m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Weekly Total</span>
+                        <span class="stat-value" id="weeklyTotal">14h 30m</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Last Session</span>
+                        <span class="stat-value" id="lastSession">Mathematics - 45m</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Upcoming Tasks Card -->
+            <div class="card tasks-card">
+                <div class="card-header">
+                    <h2 class="card-title">Upcoming Tasks</h2>
+                    <div class="task-header-controls">
+                        <select class="task-filter" id="taskFilter">
+                            <option value="all" selected>All</option>
+                            <option value="today">Today</option>
+                            <option value="tomorrow">Tomorrow</option>
+                            <option value="week">This Week</option>
+                        </select>
+                        <button class="add-task-btn" id="addTaskBtn">
+                            <i class="fas fa-plus"></i> Add
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="task-list" id="taskList">
+                    <!-- Task items will be generated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Weekly Goal Progress Card -->
+            <div class="card progress-card">
+                <div class="card-header">
+                    <h2 class="card-title">Weekly Goal Progress</h2>
+                    <div class="card-icon">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-circle">
+                        <svg class="progress-svg">
+                            <circle class="progress-circle-bg" cx="90" cy="90" r="75"></circle>
+                            <circle class="progress-circle-fill" cx="90" cy="90" r="75" 
+                                    stroke-dasharray="471" 
+                                    stroke-dashoffset="118"></circle>
+                        </svg>
+                        <div class="progress-text">
+                            <div class="progress-value">75%</div>
+                            <div class="progress-label">Completed</div>
+                        </div>
+                    </div>
+                    
+                    <div class="subject-progress">
+                        <!-- Subject progress bars will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Analytics Card -->
+            <div class="card analytics-card">
+                <div class="analytics-header">
+                    <h2 class="card-title">Study Analytics</h2>
+                    <div class="chart-filters">
+                        <button class="chart-filter active" data-period="daily">Daily</button>
+                        <button class="chart-filter" data-period="weekly">Weekly</button>
+                        <button class="chart-filter" data-period="monthly">Monthly</button>
+                    </div>
+                </div>
+                
+                <div class="charts-container">
+                    <div class="chart-container">
+                        <canvas id="studyTimeChart"></canvas>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="subjectDistributionChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Add Task Modal -->
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Add New Task</h3>
+                <button class="modal-close" id="closeTaskModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="addTaskForm">
+                    <div class="form-group">
+                        <label for="taskTitle">Task Title</label>
+                        <input type="text" class="form-control" id="taskTitle" placeholder="Enter task title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskSubject">Subject</label>
+                        <select class="form-control" id="taskSubject" required>
+                            <option value="" disabled selected>Select Subject</option>
+                            <option value="1">Mathematics</option>
+                            <option value="2">Physics</option>
+                            <option value="3">Computer Science</option>
+                            <option value="4">English</option>
+                            <option value="5">Chemistry</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskDueDate">Due Date</label>
+                        <input type="date" class="form-control" id="taskDueDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="taskPriority">Priority</label>
+                        <select class="form-control" id="taskPriority">
+                            <option value="low">Low</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="high">High</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-cancel" id="cancelTaskBtn">Cancel</button>
+                <button class="btn btn-primary" id="saveTaskBtn">Save Task</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Data
+        let subjects = [
+            { id: 1, name: 'Mathematics', color: '#6366F1', weeklyGoal: 7, completed: 5.5 },
+            { id: 2, name: 'Physics', color: '#10B981', weeklyGoal: 5, completed: 4 },
+            { id: 3, name: 'Computer Science', color: '#F59E0B', weeklyGoal: 6, completed: 4.5 },
+            { id: 4, name: 'English', color: '#EF4444', weeklyGoal: 3, completed: 1.5 },
+            { id: 5, name: 'Chemistry', color: '#8B5CF6', weeklyGoal: 4, completed: 3 }
+        ];
+        
+        let tasks = [
+            { id: 1, title: 'Complete Calculus Assignment', subjectId: 1, dueDate: '2025-10-28', priority: 'high', completed: false },
+            { id: 2, title: 'Physics Lab Report', subjectId: 2, dueDate: '2025-10-29', priority: 'medium', completed: false },
+            { id: 3, title: 'Programming Project', subjectId: 3, dueDate: '2025-10-30', priority: 'high', completed: false },
+            { id: 4, title: 'English Essay Draft', subjectId: 4, dueDate: '2025-11-02', priority: 'medium', completed: true },
+            { id: 5, title: 'Chemistry Revision', subjectId: 5, dueDate: '2025-10-31', priority: 'low', completed: false }
+        ];
+        
+        let studySessions = [
+            { id: 1, subjectId: 1, date: '2025-10-27', duration: 90 },
+            { id: 2, subjectId: 2, date: '2025-10-27', duration: 45 },
+            { id: 3, subjectId: 3, date: '2025-10-26', duration: 60 },
+            { id: 4, subjectId: 4, date: '2025-10-25', duration: 30 },
+            { id: 5, subjectId: 1, date: '2025-10-24', duration: 75 }
+        ];
+        
+        // Timer variables
+        let timer = {
+            interval: null,
+            seconds: 0,
+            isRunning: false,
+            selectedSubject: null
+        };
+
+        // DOM Elements
+        const timerDisplay = document.getElementById('timerDisplay');
+        const startTimerBtn = document.getElementById('startTimerBtn');
+        const pauseTimerBtn = document.getElementById('pauseTimerBtn');
+        const resetTimerBtn = document.getElementById('resetTimerBtn');
+        const timerSubjectSelect = document.getElementById('timerSubjectSelect');
+        const todayTotal = document.getElementById('todayTotal');
+        const weeklyTotal = document.getElementById('weeklyTotal');
+        const lastSession = document.getElementById('lastSession');
+        const taskList = document.getElementById('taskList');
+        const taskFilter = document.getElementById('taskFilter');
+        const addTaskBtn = document.getElementById('addTaskBtn');
+        const addTaskModal = document.getElementById('addTaskModal');
+        const closeTaskModal = document.getElementById('closeTaskModal');
+        const cancelTaskBtn = document.getElementById('cancelTaskBtn');
+        const saveTaskBtn = document.getElementById('saveTaskBtn');
+        const taskForm = document.getElementById('addTaskForm');
+        const chartFilters = document.querySelectorAll('.chart-filter');
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date as default for task due date
+            document.getElementById('taskDueDate').valueAsDate = new Date();
+            
+            // Render initial data
+            renderTasks();
+            renderSubjectProgress();
+            updateStudyStats();
+            initCharts();
+            
+            // Set up event listeners
+            setupEventListeners();
+        });
+
+        // Setup event listeners
+        function setupEventListeners() {
+            // Timer controls
+            startTimerBtn.addEventListener('click', startTimer);
+            pauseTimerBtn.addEventListener('click', pauseTimer);
+            resetTimerBtn.addEventListener('click', resetTimer);
+            
+            // Task filter
+            taskFilter.addEventListener('change', renderTasks);
+            
+            // Modal controls
+            addTaskBtn.addEventListener('click', () => {
+                addTaskModal.classList.add('active');
+            });
+            
+            closeTaskModal.addEventListener('click', () => {
+                addTaskModal.classList.remove('active');
+            });
+            
+            cancelTaskBtn.addEventListener('click', () => {
+                addTaskModal.classList.remove('active');
+            });
+            
+            saveTaskBtn.addEventListener('click', saveTask);
+            
+            // Chart filters
+            chartFilters.forEach(filter => {
+                filter.addEventListener('click', function() {
+                    chartFilters.forEach(f => f.classList.remove('active'));
+                    this.classList.add('active');
+                    updateCharts(this.dataset.period);
+                });
+            });
+        }
+
+        // Timer functions
+        function startTimer() {
+            const selectedSubject = timerSubjectSelect.value;
+            
+            if (!selectedSubject) {
+                alert('Please select a subject before starting the timer.');
+                return;
+            }
+            
+            timer.selectedSubject = selectedSubject;
+            timer.isRunning = true;
+            
+            startTimerBtn.disabled = true;
+            pauseTimerBtn.disabled = false;
+            resetTimerBtn.disabled = false;
+            timerSubjectSelect.disabled = true;
+            
+            timer.interval = setInterval(function() {
+                timer.seconds++;
+                updateTimerDisplay();
+            }, 1000);
+        }
+        
+        function pauseTimer() {
+            timer.isRunning = false;
+            clearInterval(timer.interval);
+            
+            startTimerBtn.disabled = false;
+            pauseTimerBtn.disabled = true;
+        }
+        
+        function resetTimer() {
+            // Ask to save the session if time is more than 1 minute
+            if (timer.seconds >= 60) {
+                if (confirm('Do you want to save this study session?')) {
+                    saveStudySession();
+                }
+            }
+            
+            timer.isRunning = false;
+            clearInterval(timer.interval);
+            timer.seconds = 0;
+            timer.selectedSubject = null;
+            
+            updateTimerDisplay();
+            
+            startTimerBtn.disabled = false;
+            pauseTimerBtn.disabled = true;
+            resetTimerBtn.disabled = true;
+            timerSubjectSelect.disabled = false;
+            timerSubjectSelect.value = '';
+        }
+        
+        function updateTimerDisplay() {
+            const hours = Math.floor(timer.seconds / 3600);
+            const minutes = Math.floor((timer.seconds % 3600) / 60);
+            const seconds = timer.seconds % 60;
+            
+            timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+        
+        function saveStudySession() {
+            const minutes = Math.floor(timer.seconds / 60);
+            const today = new Date().toISOString().split('T')[0]; // Format: YYYY-MM-DD
+            
+            // Create a new study session
+            const newSession = {
+                id: studySessions.length > 0 ? Math.max(...studySessions.map(s => s.id)) + 1 : 1,
+                subjectId: parseInt(timer.selectedSubject),
+                date: today,
+                duration: minutes
+            };
+            
+            studySessions.push(newSession);
+            
+            // Update subject's completed time
+            const subject = subjects.find(s => s.id === parseInt(timer.selectedSubject));
+            if (subject) {
+                subject.completed = parseFloat((subject.completed + (minutes / 60)).toFixed(1));
+            }
+            
+            // Update UI
+            updateStudyStats();
+            renderSubjectProgress();
+            updateCharts('daily');
+        }
+
+        // Task functions
+        function renderTasks() {
+            const filter = taskFilter.value;
+            taskList.innerHTML = '';
+            
+            let filteredTasks = [...tasks];
+            
+            // Apply filter
+            if (filter !== 'all') {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                const endOfWeek = new Date(today);
+                endOfWeek.setDate(endOfWeek.getDate() + (7 - endOfWeek.getDay()));
+                
+                filteredTasks = filteredTasks.filter(task => {
+                    const dueDate = new Date(task.dueDate);
+                    dueDate.setHours(0, 0, 0, 0);
+                    
+                    if (filter === 'today') {
+                        return dueDate.getTime() === today.getTime();
+                    } else if (filter === 'tomorrow') {
+                        return dueDate.getTime() === tomorrow.getTime();
+                    } else if (filter === 'week') {
+                        return dueDate >= today && dueDate <= endOfWeek;
+                    }
+                    
+                    return true;
+                });
+            }
+            
+            // Sort by due date and then by priority
+            filteredTasks.sort((a, b) => {
+                const dateComparison = new Date(a.dueDate) - new Date(b.dueDate);
+                if (dateComparison !== 0) return dateComparison;
+                
+                const priorityValues = { high: 1, medium: 2, low: 3 };
+                return priorityValues[a.priority] - priorityValues[b.priority];
+            });
+            
+            if (filteredTasks.length === 0) {
+                taskList.innerHTML = '<p style="text-align: center; padding: 20px; color: var(--text-tertiary);">No tasks found</p>';
+                return;
+            }
+            
+            filteredTasks.forEach(task => {
+                const subject = subjects.find(s => s.id === task.subjectId);
+                const dueDate = new Date(task.dueDate);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                
+                const tomorrow = new Date(today);
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                
+                let dueDateText;
+                if (dueDate.toDateString() === today.toDateString()) {
+                    dueDateText = 'Today';
+                } else if (dueDate.toDateString() === tomorrow.toDateString()) {
+                    dueDateText = 'Tomorrow';
+                } else {
+                    dueDateText = dueDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                }
+                
+                const priorityColors = {
+                    high: '#EF4444',
+                    medium: '#F59E0B',
+                    low: '#10B981'
+                };
+                
+                const taskItem = document.createElement('div');
+                taskItem.className = 'task-item';
+                if (task.completed) {
+                    taskItem.style.opacity = '0.6';
+                }
+                
+                taskItem.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" data-id="${task.id}" ${task.completed ? 'checked' : ''}>
+                    <div class="task-content">
+                        <div class="task-title">${task.title}</div>
+                        <div class="task-details">
+                            <div class="task-detail">
+                                <i class="fas fa-book" style="color: ${subject.color};"></i>
+                                <span>${subject.name}</span>
+                            </div>
+                            <div class="task-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>${dueDateText}</span>
+                            </div>
+                            <div class="task-detail">
+                                <i class="fas fa-flag" style="color: ${priorityColors[task.priority]};"></i>
+                                <span>${task.priority.charAt(0).toUpperCase() + task.priority.slice(1)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action-btn edit-btn" data-id="${task.id}">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="task-action-btn delete-btn" data-id="${task.id}">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
+                `;
+                
+                taskList.appendChild(taskItem);
+            });
+            
+            // Add event listeners to checkboxes
+            document.querySelectorAll('.task-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const taskId = parseInt(this.dataset.id);
+                    const task = tasks.find(t => t.id === taskId);
+                    if (task) {
+                        task.completed = this.checked;
+                        renderTasks();
+                    }
+                });
+            });
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = parseInt(this.dataset.id);
+                    if (confirm('Are you sure you want to delete this task?')) {
+                        tasks = tasks.filter(t => t.id !== taskId);
+                        renderTasks();
+                    }
+                });
+            });
+            
+            // Add event listeners to edit buttons
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const taskId = parseInt(this.dataset.id);
+                    editTask(taskId);
+                });
+            });
+        }
+        
+        function saveTask() {
+            const title = document.getElementById('taskTitle').value;
+            const subjectId = parseInt(document.getElementById('taskSubject').value);
+            const dueDate = document.getElementById('taskDueDate').value;
+            const priority = document.getElementById('taskPriority').value;
+            
+            if (!title || !subjectId || !dueDate) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            const taskId = document.getElementById('saveTaskBtn').dataset.taskId;
+            
+            if (taskId) {
+                // Update existing task
+                const task = tasks.find(t => t.id === parseInt(taskId));
+                if (task) {
+                    task.title = title;
+                    task.subjectId = subjectId;
+                    task.dueDate = dueDate;
+                    task.priority = priority;
+                }
+            } else {
+                // Create new task
+                const newTask = {
+                    id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
+                    title: title,
+                    subjectId: subjectId,
+                    dueDate: dueDate,
+                    priority: priority,
+                    completed: false
+                };
+                
+                tasks.push(newTask);
+            }
+            
+            // Reset form and close modal
+            taskForm.reset();
+            document.getElementById('taskDueDate').valueAsDate = new Date();
+            document.getElementById('saveTaskBtn').dataset.taskId = '';
+            document.getElementById('saveTaskBtn').textContent = 'Save Task';
+            
+            addTaskModal.classList.remove('active');
+            
+            // Update UI
+            renderTasks();
+        }
+        
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+            
+            // Fill form with task data
+            document.getElementById('taskTitle').value = task.title;
+            document.getElementById('taskSubject').value = task.subjectId;
+            document.getElementById('taskDueDate').value = task.dueDate;
+            document.getElementById('taskPriority').value = task.priority;
+            
+            // Update save button
+            document.getElementById('saveTaskBtn').dataset.taskId = taskId;
+            document.getElementById('saveTaskBtn').textContent = 'Update Task';
+            
+            // Open modal
+            addTaskModal.classList.add('active');
+        }
+
+        // Progress functions
+        function renderSubjectProgress() {
+            const subjectProgressContainer = document.querySelector('.subject-progress');
+            subjectProgressContainer.innerHTML = '';
+            
+            const totalGoalHours = subjects.reduce((sum, subject) => sum + subject.weeklyGoal, 0);
+            const totalCompletedHours = subjects.reduce((sum, subject) => sum + subject.completed, 0);
+            const overallPercentage = Math.min(Math.round((totalCompletedHours / totalGoalHours) * 100), 100);
+            
+            // Update overall progress circle
+            const progressCircleFill = document.querySelector('.progress-circle-fill');
+            const circumference = 2 * Math.PI * 75; // 75 is the radius
+            const dashoffset = circumference * (1 - overallPercentage / 100);
+            progressCircleFill.style.strokeDashoffset = dashoffset;
+            
+            document.querySelector('.progress-value').textContent = `${overallPercentage}%`;
+            
+            // Render subject progress bars
+            subjects.forEach(subject => {
+                const percentage = Math.min(Math.round((subject.completed / subject.weeklyGoal) * 100), 100);
+                
+                const subjectItem = document.createElement('div');
+                subjectItem.className = 'subject-item';
+                subjectItem.innerHTML = `
+                    <div class="subject-header">
+                        <div class="subject-name">${subject.name}</div>
+                        <div class="subject-hours">${subject.completed}h / ${subject.weeklyGoal}h</div>
+                    </div>
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" style="width: ${percentage}%; background-color: ${subject.color};"></div>
+                    </div>
+                `;
+                
+                subjectProgressContainer.appendChild(subjectItem);
+            });
+        }
+        
+        // Study stats update
+        function updateStudyStats() {
+            const today = new Date().toISOString().split('T')[0];
+            
+            // Calculate today's total study time
+            const todaySessions = studySessions.filter(session => session.date === today);
+            const todayMinutes = todaySessions.reduce((sum, session) => sum + session.duration, 0);
+            const todayHours = Math.floor(todayMinutes / 60);
+            const todayRemainingMinutes = todayMinutes % 60;
+            todayTotal.textContent = `${todayHours}h ${todayRemainingMinutes}m`;
+            
+            // Calculate weekly total
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+            
+            const weeklySessions = studySessions.filter(session => {
+                const sessionDate = new Date(session.date);
+                return sessionDate >= oneWeekAgo;
+            });
+            
+            const weeklyMinutes = weeklySessions.reduce((sum, session) => sum + session.duration, 0);
+            const weeklyHours = Math.floor(weeklyMinutes / 60);
+            const weeklyRemainingMinutes = weeklyMinutes % 60;
+            weeklyTotal.textContent = `${weeklyHours}h ${weeklyRemainingMinutes}m`;
+            
+            // Get last session info
+            if (studySessions.length > 0) {
+                // Sort by date, newest first
+                const sortedSessions = [...studySessions].sort((a, b) => new Date(b.date) - new Date(a.date));
+                const lastSessionData = sortedSessions[0];
+                const subject = subjects.find(s => s.id === lastSessionData.subjectId);
+                
+                const hours = Math.floor(lastSessionData.duration / 60);
+                const minutes = lastSessionData.duration % 60;
+                const durationText = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
+                
+                lastSession.textContent = `${subject.name} - ${durationText}`;
+            } else {
+                lastSession.textContent = 'No sessions yet';
+            }
+        }
+
+        // Chart functions
+        function initCharts() {
+            // Study Time Chart
+            const studyTimeCtx = document.getElementById('studyTimeChart').getContext('2d');
+            window.studyTimeChart = new Chart(studyTimeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Study Hours',
+                        data: [2.5, 3, 1.5, 4, 2, 3.5, 2],
+                        backgroundColor: '#6366f1',
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Daily Study Hours',
+                            color: '#f3f4f6',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#3f3f46'
+                            },
+                            ticks: {
+                                color: '#a1a1aa'
+                            },
+                            title: {
+                                display: true,
+                                text: 'Hours',
+                                color: '#a1a1aa'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#3f3f46'
+                            },
+                            ticks: {
+                                color: '#a1a1aa'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Subject Distribution Chart
+            const subjectDistCtx = document.getElementById('subjectDistributionChart').getContext('2d');
+            window.subjectDistChart = new Chart(subjectDistCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: subjects.map(s => s.name),
+                    datasets: [{
+                        data: subjects.map(s => s.completed),
+                        backgroundColor: subjects.map(s => s.color),
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Subject Distribution',
+                            color: '#f3f4f6',
+                            font: {
+                                size: 16,
+                                weight: 'bold'
+                            }
+                        },
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#a1a1aa',
+                                usePointStyle: true,
+                                pointStyle: 'circle'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateCharts(period) {
+            let labels = [];
+            let data = [];
+            
+            // Update study time chart based on selected period
+            if (period === 'daily') {
+                labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                data = [2.5, 3, 1.5, 4, 2, 3.5, 2]; // Sample daily data
+                window.studyTimeChart.options.plugins.title.text = 'Daily Study Hours';
+            } else if (period === 'weekly') {
+                labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                data = [15, 18, 12, 20]; // Sample weekly data
+                window.studyTimeChart.options.plugins.title.text = 'Weekly Study Hours';
+            } else if (period === 'monthly') {
+                labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+                data = [45, 55, 60, 58, 65, 70, 65, 75, 68, 72, 0, 0]; // Sample monthly data
+                window.studyTimeChart.options.plugins.title.text = 'Monthly Study Hours';
+            }
+            
+            window.studyTimeChart.data.labels = labels;
+            window.studyTimeChart.data.datasets[0].data = data;
+            window.studyTimeChart.update();
+            
+            // No need to update the subject distribution chart as it doesn't change with time periods
+        }
+    </script>
+</body>
+</html>
